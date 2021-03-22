@@ -42,10 +42,10 @@
         ctx.closePath();
 
         if(this.x + this.dx > canvas.width-this.ballRadius || this.x + this.dx < this.ballRadius) {
-            this.dx = -this.dx;
+          this.dx = -this.dx;
         }
         if(this.y + this.dy > canvas.height-this.ballRadius || this.y + this.dy < this.ballRadius) {
-            this.dy = -this.dy;
+          this.dy = -this.dy;
         }
 
         this.x += this.dx;
@@ -60,16 +60,93 @@
       const intervalLoop = setInterval(function() {
         circleArray[i] = new Circle();
         i++
-
         if (i >= 50) clearInterval(intervalLoop);
       }, 500)
 
       function drawRepeat() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         circleArray.forEach((circle) => { circle.draw(); })
+        requestAnimationFrame(drawRepeat);
       }
 
-      setInterval(drawRepeat, 60)
+      drawRepeat();
+    }
+
+    createCircles();
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="myCanvas" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function getRandomColor() {
+      function getRandomHex() {
+        return Math.floor(Math.random() * 255);
+      }
+      return `rgb(${getRandomHex ()}, ${getRandomHex()}, ${getRandomHex()})`;
+    }
+
+    function randBetween(max, min) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    class Circle {
+      constructor() {
+        this.ballRadius = Math.floor(Math.random() * canvas.width / 5);
+        this.x = randBetween(canvas.height - this.ballRadius, this.ballRadius);
+        this.y = randBetween(canvas.width - this.ballRadius, this.ballRadius);
+        this.dx = randBetween(15, -15);
+        this.dy = -randBetween(15, -15);
+        this.color = getRandomColor();
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+
+        if(this.x + this.dx > canvas.width-this.ballRadius || this.x + this.dx < this.ballRadius) {
+          this.dx = -this.dx;
+        }
+        if(this.y + this.dy > canvas.height-this.ballRadius || this.y + this.dy < this.ballRadius) {
+          this.dy = -this.dy;
+        }
+
+        this.x += this.dx;
+        this.y += this.dy;
+      }
+    }
+
+    function createCircles() {
+      const circleArray = [];
+      let i = 0;
+
+      const intervalLoop = setInterval(function() {
+        circleArray[i] = new Circle();
+        i++
+        if (i >= 50) clearInterval(intervalLoop);
+      }, 500)
+
+      function drawRepeat() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        circleArray.forEach((circle) => { circle.draw(); })
+        requestAnimationFrame(drawRepeat);
+      }
+
+      drawRepeat();
     }
 
     createCircles();
