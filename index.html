@@ -1,55 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Funny Circle</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 <body>
-  <canvas id="myCanvas" width="1368px" height="768px" style="border:1px solid #d3d3d3;"></canvas>
+  <canvas id="myCanvas" width="600" height="600"></canvas>
 
   <script>
-    function Circle(x, y, radius) {
-      this.x = x;
-      this.y = y;
-      this.radius = radius;
-    }
-    
-    function getRandomHex() {
-      return Math.floor(Math.random() * 255);
-    }
-    
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
     function getRandomColor() {
-      const red = getRandomHex();
-      const blue = getRandomHex();
-      const green = getRandomHex();
-      
-      return `rgb(${red}, ${blue}, ${green})`
+      function getRandomHex() {
+        return Math.floor(Math.random() * 255);
+      }
+      return `rgb(${getRandomHex ()}, ${getRandomHex()}, ${getRandomHex()})`;
     }
-    
-    function createCircle() {
-      const ctx = document.getElementById('myCanvas').getContext('2d');
-      const radius = Math.floor(Math.random() * 500);
-      const color = getRandomColor();
-  
-      let x = Math.random() * window.innerHeight;
-      let y = Math.random() * window.innerWidth;
-      const circle = new Circle(x, y, radius);
-      
-      ctx.beginPath();
-      ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
-      ctx.fill()
-      ctx.closePath();
+
+    function randBetween(max, min) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
     }
-    
-    function createMutilpleCircle() {
-      for (let i = 0; i < 50; i++) {
-        createCircle();
+
+    class Circle {
+      constructor() {
+        this.ballRadius = Math.floor(Math.random() * canvas.width / 5);
+        this.x = randBetween(canvas.height - this.ballRadius, this.ballRadius);
+        this.y = randBetween(canvas.width - this.ballRadius, this.ballRadius);
+        this.dx = randBetween(15, -15);
+        this.dy = -randBetween(15, -15);
+        this.color = getRandomColor();
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+
+        if(this.x + this.dx > canvas.width-this.ballRadius || this.x + this.dx < this.ballRadius) {
+            this.dx = -this.dx;
+        }
+        if(this.y + this.dy > canvas.height-this.ballRadius || this.y + this.dy < this.ballRadius) {
+            this.dy = -this.dy;
+        }
+
+        this.x += this.dx;
+        this.y += this.dy;
       }
     }
-    
+
+    function createCircles() {
+      const circleArray = [];
+      let i = 0;
+
+      const intervalLoop = setInterval(function() {
+        circleArray[i] = new Circle();
+        i++
+
+        if (i >= 50) clearInterval(intervalLoop);
+      }, 500)
+
+      function drawRepeat() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        circleArray.forEach((circle) => { circle.draw(); })
+      }
+
+      setInterval(drawRepeat, 60)
+    }
+
+    createCircles();
   </script>
 </body>
 </html>
